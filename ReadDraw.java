@@ -1,5 +1,8 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.jfree.ui.RefineryUtilities;
+
 
 
 
@@ -11,17 +14,21 @@ public class ReadDraw {
 
   public int[] arr1 = new int[INTERVALEND - INTERVALSTART];
   public int[] arr2 = new int[INTERVALEND - INTERVALSTART];
+  public int compCount;
+  public int otherCount;
+  public HashMap<Integer, String> header;
 
   /**
   * Get the headers of the input file as a HashMap
+ * @throws IOException 
   */
-  public HashMap<Integer,String> getTopics(Kattio io){
-    String[] header = io.readLine().split(",");
-    HashMap<Integer, String> ans = new HashMap<Integer, String>();
-    for(int i=0; i<header.length; i++){
-      ans.put(i, header[i]);
+  public void getTopics(Kattio io) throws IOException{
+    String[] tmp = io.readLine().split(",");
+    header = new HashMap<Integer, String>();
+    for(int i=0; i<tmp.length; i++){
+      header.put(i, tmp[i]);
     }
-    return ans;
+    
   }
 
   public int readInt(String word){
@@ -36,29 +43,37 @@ public class ReadDraw {
 
 
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
 
     Kattio io = new Kattio(System.in, System.out);
     ReadDraw controller = new ReadDraw();
-    HashMap<Integer, String> header = controller.getTopics(io);
+    controller.getTopics(io);
+    
     String line = io.readLine();
-    int compCount = 0; int otherCount =0;
     while (line != null){
       String[] tmp = line.split(",");
       if(tmp[CATEGORY].contains("Computer") ){
-        compCount++;
+        controller.compCount++;
         for(int i=0; i<INTERVALEND - INTERVALSTART; i++)
           controller.arr1[i] += controller.readInt(tmp[i + INTERVALSTART]);
       } else {
-        otherCount++;
+        controller.otherCount++;
         for(int j=0; j<INTERVALEND - INTERVALSTART; j++)
           controller.arr2[j] += controller.readInt(tmp[j + INTERVALSTART]);
       }
 
-      line = io.readLine();
+      try{line = io.readLine();} catch (Exception e) {
+		// TODO: handle exception
+    	  line = null;
+    	 }
     }
-
-    for(int i = 0; i<controller.arr1.length; i++) System.out.println(controller.arr1[i]/compCount);
+    
+    io.close();
+    final DualAxisChart graph = new DualAxisChart("A Chart", controller );
+    graph.pack();
+    RefineryUtilities.centerFrameOnScreen(graph);
+    graph.setVisible(true);
+    
   }
 
 }

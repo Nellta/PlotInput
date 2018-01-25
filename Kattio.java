@@ -66,14 +66,10 @@ class Kattio extends PrintWriter {
         return nextToken();
     }
 
-    public String readLine() {
+    public String readLine() throws IOException {
       String ans;
-      try {
-        ans = r.readLine();
-      } catch (IOException e) {
-        ans = null;
-      }
-
+     if(r.ready()) ans = r.readLine();
+     else ans = null;
       return ans;
     }
 
